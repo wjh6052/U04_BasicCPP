@@ -80,12 +80,9 @@ void ACPlayer::BeginPlay()
 	{
 		AutoFireWidget = CreateWidget<UCAutoFireWidget, APlayerController>(GetController<APlayerController>(), AutoFireWidgetClass);
 		AutoFireWidget->AddToViewport();
-
 	}
 
-
-
-
+	Rifle->Bring_Widget(AutoFireWidget);
 
 	Super::BeginPlay();
 }
@@ -118,6 +115,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Released, this, &ACPlayer::OffFire);
 
 	PlayerInputComponent->BindAction("AutoFire", EInputEvent::IE_Pressed, this, &ACPlayer::OnAutoFire);
+
+	PlayerInputComponent->BindAction("Reloading", EInputEvent::IE_Pressed, this, &ACPlayer::OnReloading);
 }
 
 void ACPlayer::GetAimInfo(FVector& OutAimStart, FVector& OutAimEnd, FVector& OutAimDirection)
@@ -225,7 +224,7 @@ void ACPlayer::OffAim()
 }
 
 void ACPlayer::OnFire()
-{
+{	
 	Rifle->Begin_Fire();
 }
 
@@ -241,6 +240,11 @@ void ACPlayer::OnAutoFire()
 	Rifle->ToggleAutoFire();
 
 	Rifle->IsAutoFire() ? AutoFireWidget->OnAutoFire() : AutoFireWidget->OffAutoFire();
+}
+
+void ACPlayer::OnReloading()
+{
+	Rifle->Reloading();
 }
 
 void ACPlayer::SetBodyColor(FLinearColor InColor)

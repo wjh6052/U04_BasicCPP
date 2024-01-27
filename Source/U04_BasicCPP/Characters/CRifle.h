@@ -47,6 +47,11 @@ public:
 
 	void Firing();
 
+	void Bring_Widget(class UCAutoFireWidget* A);
+
+	void Reloading();
+	void Reloading2();
+
 
 
 private:
@@ -67,6 +72,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Montages")
 		class UAnimMontage* UngrabMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Montages")
+		class UAnimMontage* Reload_Motion;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Effect")
 		TSubclassOf<UCameraShake> ShakeClass;
@@ -93,15 +101,20 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class USkeletalMeshComponent* Mesh;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Widgets")
+		TSubclassOf<class UCAutoFireWidget> AutoFireWidgetClass;
 
 private:
 	class ACharacter* OwnerCharacter;
+	class UCAutoFireWidget* AutoFireWidget;
 
 	bool bEquipping;//Is Playing Montages
 	bool bEquipped;	//Used In AnimInstance
 	bool bAiming;	//Is R-Button Pressed
 	bool bFiring;	//Is L_Button Pressed
 	bool bAutoFire;	 //Is 'B' Button Toggle
+
+	int32 bullet;
 
 
 	FTimerHandle AutoFireTimer;

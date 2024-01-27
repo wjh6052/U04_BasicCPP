@@ -15,4 +15,13 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void OffAutoFire();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void Residual_Bullets();
+	
+	UFUNCTION(BlueprintImplementableEvent)
+		void Reloading();
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		int32 Bullets = 30;
 };

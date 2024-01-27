@@ -8,7 +8,9 @@
 #include "Particles/ParticleSystem.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Characters/IRifle.h"
+#include "Widgets/CAutoFireWidget.h"
 #include "CBullet.h"
+#include "CPlayer.h"
 
 
 
@@ -24,6 +26,8 @@ ACRifle::ACRifle()
 
 	CHelpers::GetAsset(&GrabMontage, "/Game/Character/Animations/Rifle/Rifle_Grab_Montage.Rifle_Grab_Montage");
 	CHelpers::GetAsset(&UngrabMontage, "/Game/Character/Animations/Rifle/Rifle_UnGrab_Montage.Rifle_Ungrab_Montage");
+	CHelpers::GetAsset(&Reload_Motion, "/Game/Player/Reloading_Montage.Reloading_Montage");
+
 
 	//Get CameraShake ClasRef
 	CHelpers::GetClass<UCameraShake>(&ShakeClass, "Blueprint'/Game/Player/BP_Shake.BP_Shake_C'");
@@ -58,6 +62,10 @@ void ACRifle::BeginPlay()
 
 	if (!!OwnerCharacter)
 		AttachToComponent(OwnerCharacter->GetMesh(), FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), HolsterSocket);
+
+
+	bullet = 30;
+
 }
 
 void ACRifle::Tick(float DeltaTime)
@@ -67,7 +75,7 @@ void ACRifle::Tick(float DeltaTime)
 	CheckFalse(bAiming);
 
 	//LineTrace for Aim(HitScan)
-	IIRifle* rifleCharacter = Cast< IIRifle>(OwnerCharacter);
+	IIRifle* rifleCharacter = Cast<IIRifle>(OwnerCharacter);
 	CheckNull(rifleCharacter);
 
 	FVector start, end, direction;
@@ -167,12 +175,16 @@ void ACRifle::Begin_Fire()
 
 	CurrentPitch = 0.0f;
 
+	if (bullet <= 0)
+		return;
+	
+
 	if (bAutoFire == true)
 	{
 		GetWorld()->GetTimerManager().SetTimer(AutoFireTimer, this, &ACRifle::Firing, 0.1f, true);
-
 		return;
 	}
+	
 
 	Firing();
 }
@@ -187,6 +199,10 @@ void ACRifle::End_Fire()
 
 void ACRifle::Firing()
 {
+	bullet -= 1;
+	if (bullet < 0)
+		return;
+
 	//Get Aim Info
 	IIRifle* rifleCharacter = Cast<IIRifle>(OwnerCharacter);
 	CheckNull(rifleCharacter);
@@ -213,6 +229,8 @@ void ACRifle::Firing()
 	CurrentPitch -= PitchSpeed * GetWorld()->GetDeltaSeconds();
 	if (CurrentPitch > -LimitPitch)
 		OwnerCharacter->AddControllerPitchInput(CurrentPitch);
+
+	AutoFireWidget->Residual_Bullets();
 
 	//LineTrace for AddImpulse
 	FCollisionQueryParams queryParam;
@@ -255,4 +273,20 @@ void ACRifle::Firing()
 		}
 	}
 
+}
+
+void ACRifle::Bring_Widget(class UCAutoFireWidget* A)
+{
+	AutoFireWidget = A;
+}
+
+void ACRifle::Reloading()
+{
+	OwnerCharacter->PlayAnimMontage(Reload_Motion);
+}
+
+void ACRifle::Reloading2()
+{
+	bullet = 30;
+	AutoFireWidget->Reloading();
 }

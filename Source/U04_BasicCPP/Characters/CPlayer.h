@@ -50,6 +50,8 @@ private:
 
 	void OnAutoFire();
 
+	void OnReloading();
+
 protected:
 	UFUNCTION(BlueprintImplementableEvent)
 		void ZoomIn();
