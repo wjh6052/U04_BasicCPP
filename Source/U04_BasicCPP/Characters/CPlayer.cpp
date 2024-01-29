@@ -181,6 +181,9 @@ void ACPlayer::OnRifle()
 {
 	if (Rifle->IsEquipped())
 	{
+		OffAim();
+		Rifle->End_Fire();
+
 		Rifle->Unequip();
 		return;
 	}
@@ -192,9 +195,6 @@ void ACPlayer::OnAim()
 {
 	CheckFalse(Rifle->IsEquipped());
 	CheckTrue(Rifle->IsEquipping());
-
-	bUseControllerRotationYaw = true;
-	GetCharacterMovement()->bOrientRotationToMovement = false;
 
 	SpringArm->TargetArmLength = 100.f;
 	SpringArm->SocketOffset = FVector(0, 30, 10);
@@ -210,9 +210,6 @@ void ACPlayer::OffAim()
 {
 	CheckFalse(Rifle->IsEquipped());
 	CheckTrue(Rifle->IsEquipping());
-
-	bUseControllerRotationYaw = false;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	SpringArm->TargetArmLength = 200.f;
 	SpringArm->SocketOffset = FVector(0, 60, 0);
